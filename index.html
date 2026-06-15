@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hridi Music - Premium Cloud Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #04020b, #09061a);
+            color: #fff; font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px;
+        }
+        .app-container {
+            width: 385px; background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px); border-radius: 32px; padding: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 50px rgba(0, 243, 255, 0.15);
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+        .header { 
+            text-align: center; margin-bottom: 25px; color: #00f3ff; 
+            font-weight: 800; font-size: 28px; letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.7);
+        }
+        .search-box { display: flex; gap: 10px; margin-bottom: 25px; }
+        .search-box input {
+            flex: 1; background: rgba(26, 26, 58, 0.6); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 18px; border-radius: 16px; color: #fff; outline: none; font-size: 14px;
+        }
+        .search-box button {
+            background: linear-gradient(135deg, #00f3ff, #00a8ff); border: none; padding: 0 20px;
+            border-radius: 16px; cursor: pointer; font-weight: bold; color: #000; transition: 0.2s;
+        }
+        .search-box button:hover { transform: scale(1.03); box-shadow: 0 0 15px #00f3ff; }
+
+        .disk-wrapper { display: flex; justify-content: center; margin-bottom: 25px; }
+        .vinyl-disk {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: radial-gradient(circle, #222 20%, #111 21%, #333 40%, #000 41%, #111 70%, #ff007f 100%);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .vinyl-disk.spinning { animation: spin 12s linear infinite; }
+        .center-hole {
+            width: 40px; height: 40px; border-radius: 50%; background: #06060f;
+            border: 4px solid #00f3ff; display: flex; justify-content: center; align-items: center;
+            color: #00f3ff; font-size: 16px; font-weight: bold;
+        }
+
+        .track-info { text-align: center; margin-bottom: 15px; min-height: 55px; }
+        .track-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+        .track-artist { color: #a0a5c1; font-size: 13px; }
+
+        .timeline-box { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 11px; color: #8e92a7; }
+        .progress-container { flex: 1; background: rgba(255,255,255,0.1); height: 5px; border-radius: 10px; cursor: pointer; }
+        .progress-bar { width: 0%; height: 100%; background: linear-gradient(to right, #00f3ff, #ff007f); border-radius: 10px; }
+
+        .audio-effects { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(26, 26, 58, 0.4); padding: 12px; border-radius: 16px; }
+        .volume-box { display: flex; align-items: center; gap: 8px; }
+        .volume-box input { width: 80px; accent-color: #00f3ff; cursor: pointer; }
+        .mood-select { background: #111122; color: #00f3ff; border: 1px solid rgba(0, 243, 255, 0.4); padding: 6px; border-radius: 10px; outline: none; font-size: 12px; cursor: pointer; }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 25px; }
+        .btn { background: none; border: none; color: #a0a5c1; font-size: 26px; cursor: pointer; transition: 0.2s; }
+        .btn:hover { color: #00f3ff; }
+        .btn-play { background: #fff; color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; cursor: pointer; }
+        .btn-play:hover { background: #00f3ff; box-shadow: 0 0 20px #00f3ff; transform: scale(1.05); }
+
+        .playlist-section { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+        .playlist-title { font-size: 14px; color: #ff007f; margin-bottom: 12px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .download-btn { background: #ff007f; border: none; padding: 6px 14px; border-radius: 10px; color: #fff; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .playlist-items { max-height: 100px; overflow-y: auto; list-style: none; }
+        .playlist-items li { background: rgba(26, 26, 58, 0.4); padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; font-size: 13px; display: flex; justify-content: space-between; cursor: pointer; }
+        .playlist-items li:hover { border-left: 4px solid #ff007f; background: rgba(26, 26, 58, 0.6); }
+
+        /* ডেভেলপার ব্র্যান্ডিং পারভেজ দিপু */
+        .developer-footer {
+            margin-top: 20px; font-size: 13px; color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px; font-weight: 500; text-align: center;
+        }
+        .developer-footer span {
+            color: #00f3ff; font-weight: bold; text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">HRIDI</div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Type: energetic, retro, chill, pop...">
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <div class="disk-wrapper">
+            <div class="vinyl-disk" id="disk">
+                <div class="center-hole">♬</div>
+            </div>
+        </div>
+
+        <div class="track-info">
+            <div class="track-title" id="trackTitle">Hridi Audio Core</div>
+            <div class="track-artist" id="trackArtist">Enter mood genre above to play</div>
+        </div>
+
+        <div class="timeline-box">
+            <span id="currTime">0:00</span>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <span id="totalTime">0:00</span>
+        </div>
+
+        <div class="audio-effects">
+            <div class="volume-box">
+                <span>🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
+            </div>
+            <div>
+                <select id="moodSelect" class="mood-select">
+                    <option value="flat">✨ Studio Flat</option>
+                    <option value="bass">🔥 Bass Boost</option>
+                    <option value="pop">🎤 Vocal Pop</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prevBtn">⏮</button>
+            <button class="btn btn-play" id="playBtn">▶</button>
+            <button class="btn" id="nextBtn">⏭</button>
+        </div>
+
+        <div class="playlist-section">
+            <div class="playlist-title">
+                <span>Offline Saved Vault</span>
+                <button class="download-btn" id="downloadBtn">↓ Save Offline</button>
+            </div>
+            <ul class="playlist-items" id="playlistContainer"></ul>
+        </div>
+    </div>
+
+    <div class="developer-footer">Developer: <span>Parvez Dipu</span></div>
+
+    <audio id="mainAudio" preload="auto" crossorigin="anonymous"></audio>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const moodSelect = document.getElementById('moodSelect');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const playlistContainer = document.getElementById('playlistContainer');
+        const disk = document.getElementById('disk');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const currTimeText = document.getElementById('currTime');
+        const totalTimeText = document.getElementById('totalTime');
+
+        let isPlaying = false;
+        let currentTrackData = null;
+        let offlinePlaylist = JSON.parse(localStorage.getItem('parvez_vault_v2')) || [];
+
+        const cloudLibrary = {
+            "energetic": { title: "Summer High Energy", artist: "Electronic Dance Beats", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            "retro": { title: "80s Retro Synthwave", artist: "Cyberpunk Horizon", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+            "chill": { title: "Lofi Chill Resonance", artist: "Midnight Study Cafe", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+            "pop": { title: "Modern Pop Grooves", artist: "Vocal Master Synthesis", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3" }
+        };
+
+        async function handleAudioStream(query) {
+            const cleanQuery = query.toLowerCase().trim();
+            currentTrackData = cloudLibrary[cleanQuery];
+
+            if (!currentTrackData) {
+                currentTrackData = {
+                    title: query ? query.toUpperCase() : "Dynamic Ambient Track",
+                    artist: "Global Cloud Stream",
+                    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+                };
+            }
+
+            trackTitle.innerText = "Loading Track...";
+            audio.pause();
+            audio.src = currentTrackData.src;
+            audio.load(); 
+
+            audio.onloadedmetadata = function() {
+                trackTitle.innerText = currentTrackData.title;
+                trackArtist.innerText = currentTrackData.artist;
+                executePlay();
+            };
+        }
+
+        async function executePlay() {
+            try {
+                isPlaying = true;
+                playBtn.innerText = '⏸';
+                disk.classList.add('spinning');
+                await audio.play();
+            } catch (error) {
+                pauseSong();
+            }
+        }
+
+        function pauseSong() {
+            isPlaying = false;
+            audio.pause();
+            playBtn.innerText = '▶';
+            disk.classList.remove('spinning');
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) pauseSong();
+            else if (audio.src) executePlay();
+            else handleAudioStream("chill");
+        });
+
+        volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
+
+        // মিউজিক মুড ফিল্টার চেঞ্জার লজিক
+        moodSelect.addEventListener('change', (e) => {
+            if(e.target.value === 'bass') audio.style.filter = "contrast(1.4) saturate(1.6)";
+            else if(e.target.value === 'pop') audio.style.filter = "brightness(1.2)";
+            else audio.style.filter = "none";
+        });
+
+        // লাইভ প্রোগ্রেস বার লজিক
+        audio.addEventListener('timeupdate', (e) => {
+            const { duration, currentTime } = e.srcElement;
+            if (duration) {
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currTimeText.innerText = formatTime(currentTime);
+                totalTimeText.innerText = formatTime(duration);
+            }
+        });
+
+        function formatTime(time) {
+            const mins = Math.floor(time / 60); const secs = Math.floor(time % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        progressContainer.addEventListener('click', function(e) {
+            const width = this.clientWidth;
+            const clickX = e.offsetX;
+            if (audio.duration) audio.currentTime = (clickX / width) * audio.duration;
+        });
+
+        // অফলাইন লোকাল স্টোরেজ ক্যাশিং মেকানিজম
+        downloadBtn.addEventListener('click', () => {
+            if(!currentTrackData) return alert("Search and play a song first!");
+            if(offlinePlaylist.some(s => s.title === currentTrackData.title)) return alert("Already saved in offline vault!");
+
+            offlinePlaylist.push(currentTrackData);
+            localStorage.setItem('parvez_vault_v2', JSON.stringify(offlinePlaylist));
+            renderOfflinePlaylist();
+        });
+
+        function renderOfflinePlaylist() {
+            playlistContainer.innerHTML = '';
+            offlinePlaylist.forEach((song) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>🎵 ${song.title}</span> <small style="color:#00f3ff; font-weight:bold;">Offline</small>`;
+                li.addEventListener('click', () => {
+                    currentTrackData = song;
+                    trackTitle.innerText = song.title;
+                    trackArtist.innerText = song.artist;
+                    audio.src = song.src;
+                    executePlay();
+                });
+                playlistContainer.appendChild(li);
+            });
+        }
+
+        searchBtn.addEventListener('click', () => handleAudioStream(searchInput.value));
+        searchInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleAudioStream(searchInput.value); });
+
+        renderOfflinePlaylist();
+    </script>
+</body>
+</html>
